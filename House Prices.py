@@ -122,3 +122,25 @@ print(f"R-squared Score: {r2}")
 #Mean Squared Error: 21139569104.618073,R-squared Score: 0.06492206196231509 예측률은 0프로 지만 MSE는 60프로이상 줄이는데 성공했다.
 #의미가 있나... 여러가지 값들을 수정해 보았지만 만족할만한 값을 찾아내지 못했다.
 #내일 튜터님들한테 물어보고 마저 학습하자
+print('랜덤 포레스트')
+
+#특성 추가 같은 경우 코드를 전체적으로 손봐야할수도 있을거같아서 일단은 random forest를 진행해본다
+from sklearn.metrics import accuracy_score
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import classification_report
+#random forest 모델을 만들어줌
+model2 = DecisionTreeClassifier(random_state=42) #random_state 는 결정트리 모델의 랜덤성을 제어하는데 사용됨.
+model2.fit(X_train, y_train)
+
+y_pred2 = model2.predict(X_test)
+
+print(f"Accuracy: {accuracy_score(y_test, y_pred2)}")
+print(f"Classification Report:\n{classification_report(y_test, y_pred2)}")
+#정확도는 0.004234.. 한가지의 모델만 더 실험해보고 이후에도 비슷한 결과를 얻게 된다면,
+#내가 진행한 방식이 잘못된거니 다시한번 뜯어서 수정해봐야겠다.
+
+
+#... 무슨 문제인지는 모르겠는데 xgboost를 설치하고 나서부터 이후로 numpy 관련해서 오류가 계속 발생해서 
+#진행하고있던 이 프로젝트가 더이상 진행되지않는다..
+# 이전 도전과제 같은경우도 더 이상 진행이 되지않는다.
+#힘빠지네..뭔가 하던걸 마무리 못하고 어정쩡하게 끝나버리니까.
