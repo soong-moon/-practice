@@ -1,6 +1,6 @@
 #개인 실습 예제 kaggle에서 perth house prices 데이터셋을 다운로드 받았다.
 #이 데이터로 모델 학습 이후 예측까지 만드는 코드를 실습해볼 예정이다
-
+import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
@@ -34,29 +34,37 @@ print(df.isnull().sum())
 
 #이후 결측치를 확인해 보았는데 0으로 반환되었다.
 
-features =['BEDROOMS','BATHROOMS','GARAGE','LAND_AREA','BUILD_YEAR']
+features =['BEDROOMS','BATHROOMS','GARAGE','LAND_AREA']
 target = 'PRICE'
 #내가 알던건 변수에 값을 선언할때 df[['BEDROOMS,'BATHROOMS'~~'BUILD_YEAR']] 이렇게 입력을 해야 값이 선언이 되는걸로 알고있었는데,
 #어차피 features는 문자열의 리스트이기 때문에 pandas에서 각 항목의 열 이름으로 바로 인식 한다는걸 이번 실습을 통해 알게되었다.
 
+sns.displot(df['PRICE'])
+np.log1p(df['PRICE'])
 
 #IQR을 사용한 이상치 확인
-def outlier(df, columns):
+def replace_outliers_with_mode(df, columns):
+    df_copy = df.copy()
     for column in columns:
-        Q1 = df[column].quantile(0.25)
-        Q3 = df[column].quantile(0.75)
+        Q1 = df_copy[column].quantile(0.25)
+        Q3 = df_copy[column].quantile(0.75)
         IQR = Q3 - Q1
         lower_bound = Q1 - 1.5 * IQR
         upper_bound = Q3 + 1.5 * IQR
-        df = df[(df[column] >= lower_bound) & (df[column] <= upper_bound)]
-    return df
+                # 최빈값 계산
+        mode = df_copy[column].mode().iloc[0]
+        
+        # 이상치를 최빈값으로 대체
+        df_copy.loc[df_copy[column] < lower_bound, column] = mode
+        df_copy.loc[df_copy[column] > upper_bound, column] = mode
+    return df_copy
 #내가 인터넷강의를 통해서 들은 IQR 방식에서의 가장 표준이 되는 코드라고 알고있다. 1사분위수(Q1) 계산 (25번째 백분위수) , 3사분위수(Q3) 계산 (75번째 백분위수) ,하한값,상한값에
 #대한 값  0.25,0.75,1.5는 가장 기본이 되는 값이다.
 #이후에 df에  상한값과 하한값 사이에 있는 값들만 필터링하여 남기고 나머지는 제거 해주었다.
 
 
 # 특성과 타겟 변수의 이상치 제거
-df_clean = outlier(df, features + [target])
+df_clean = replace_outliers_with_mode(df, features + [target])
 
 print(df_clean)
 #이후에 코드를 확인해보니 데이터가 33000개 가량이 14000개로 줄어들었다. 약 18000개 가량이 삭제된 셈인데
@@ -144,3 +152,16 @@ print(f"Classification Report:\n{classification_report(y_test, y_pred2)}")
 #진행하고있던 이 프로젝트가 더이상 진행되지않는다..
 # 이전 도전과제 같은경우도 더 이상 진행이 되지않는다.
 #힘빠지네..뭔가 하던걸 마무리 못하고 어정쩡하게 끝나버리니까.
+
+#1030 문제 해결 !
+#진행을 못하는동안 왜그렇게 예측값이 낮았는지 곰곰히 생각을 해봤는데 아무리 생각해도, 건축년도를 집어 넣은게 예측값에 크게 영향을 주는것 같다는 생각을했다.
+#방 갯수, 화장실 갯수 주차차량,토지면적 등은 주택가격에 영향을 주기 쉽지만
+#건축년도 같은경우는 1800년대에 지었지만 오히려 가치가 높은 경우도 있을수 있으니까 ?
+#그래서 특징을 오히려 빼주면 예측치가 올라갈거 같다는 희망을 가진상태에서 바로 진행했지만 
+#Mse 값은 400억? R-squared Score:0.08382252636820098
+#랜덤포레스트 같은경우 0.005 오히려 더 낮은 값을 보여준다.
+#이후 데이터가 너무 적어서 그럴수 있을거같아서 이상치를 제거하는게 아닌 최빈값으로 바꿔주었지만
+#Mean Squared Error: 49956150586.94633 R-squared Score: 0.08722231836268579 랜덤포레스트 Accuracy: 0.036690433749257276
+#아무리 생각해도 진행이 혼자 어려워서 튜터님께 문의 드렸지만 퇴근이슈로
+#코드랑 데이터 튜터님께 전달하고 내일 같이 해결예정
+
