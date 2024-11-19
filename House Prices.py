@@ -62,7 +62,7 @@ def replace_outliers_with_mode(df, columns):
 #대한 값  0.25,0.75,1.5는 가장 기본이 되는 값이다.
 #이후에 df에  상한값과 하한값 사이에 있는 값들만 필터링하여 남기고 나머지는 제거 해주었다.
 
-
+파이프라인 = 
 # 특성과 타겟 변수의 이상치 제거
 df_clean = replace_outliers_with_mode(df, features + [target])
 
