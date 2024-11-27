@@ -79,9 +79,10 @@ y = df_clean[target]
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # 특성 스케일링
-scaler = StandardScaler()
-X_train_scaled = scaler.fit_transform(X_train)
-X_test_scaled = scaler.transform(X_test)
+scaler = StandardScaler()  # StandardScaler 객체 생성
+X_train_scaled = scaler.fit_transform(X_train)  # 훈련 데이터를 표준화
+X_test_scaled = scaler.transform(X_test)  # 테스트 데이터를 표준화
+
 
 #내가 특정한 특징들의 값은 편차가 너무나 크다. 침실같은경우 최대값이 16이지만 토지 면적의 최대값은 999999이다.
 #그렇다는건 모델을 학습하고 예측을 했을때 침실의 수가 가격을 예측하는데 거의 의미가 부여되지 않지 않을까 싶어서 스케일링을 진행하였다.

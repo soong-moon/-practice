@@ -118,3 +118,4 @@ while True:
     
     print("\n답변:")
     print(response.content)
+
